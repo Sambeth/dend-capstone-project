@@ -6,6 +6,7 @@ from helpers.schema_settings import (
     practice_size_schema,
     bnf_codes_schema,
 )
+from helpers.table_names import bnf_tables, practices_tables
 
 __all__ = [
     'drop_statements',
@@ -14,5 +15,7 @@ __all__ = [
     'chemicals_schema',
     'practice_size_schema',
     'practices_schema',
-    'bnf_codes_schema'
+    'bnf_codes_schema',
+    'bnf_tables',
+    'practices_tables'
 ]

@@ -2,9 +2,11 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 
-from operators import (PreprocessToS3Operator)
-
-S3_CONN_ID = 's3_staging'
+from operators import (
+    PreprocessToS3Operator,
+    S3ToStagingOperator,
+    StagingQualityCheckOperator,
+)
 
 default_args = {
     'owner': 'airflow',
@@ -17,17 +19,33 @@ default_args = {
 }
 
 dag = DAG(
-    'preprocessing_data',
+    'etl',
     default_args=default_args,
+    description='Load data from s3 staging to redshift staging'
 )
 
 start_operator = DummyOperator(task_id='start_preprocessing_data', dag=dag)
+
 preprocess_data_to_s3 = PreprocessToS3Operator(
     task_id="preprocess_data",
-    s3_coonection=S3_CONN_ID,
     dag=dag
 )
 
 end_operator = DummyOperator(task_id='end_preprocessing_data', dag=dag)
 
+load_data_to_redshift_staging = S3ToStagingOperator(
+    task_id="load_data_to_redshift",
+    dag=dag,
+    schema='staging'
+)
+
+check_staging_data_quality = StagingQualityCheckOperator(
+    task_id="check_data_quality_in_staging",
+    dag=dag,
+    schema='staging'
+)
+
+end_loading = DummyOperator(task_id='end_loading_to_redshift', dag=dag)
+
 start_operator >> preprocess_data_to_s3 >> end_operator
+end_operator >> load_data_to_redshift_staging >> check_staging_data_quality >> end_loading

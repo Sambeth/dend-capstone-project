@@ -35,7 +35,7 @@ DROP_FACT_TABLE_PRACTICE_SIZE = """
     DROP TABLE IF EXISTS staging.practice_size;
 """
 
-DROP_DIM_TABLE_PRACTICE_SIZE = """
+DROP_DIM_TABLE_PRACTICE_GROUPS = """
     DROP TABLE IF EXISTS staging.groups;
 """
 
@@ -108,9 +108,8 @@ CREATE_TABLE_PRACTICES = """
 """
 
 CREATE_TABLE_PRACTICE_SIZE = """
-    CREATE TABLE staging.practice_size (
+    CREATE TABLE staging.practices_size (
         practice_code varchar(255),
-        comm_prov varchar(255),
         group_code varchar(255),
         gp_count integer,
         dispensing_list_size integer,
@@ -157,8 +156,9 @@ drop_statements = [
     DROP_DIM_TABLE_BNF_PRODUCTS,
     DROP_DIM_TABLE_BNF_PRESENTATIONS,
     DROP_DIM_TABLE_PRACTICES,
-    DROP_FACT_TABLE_PRESCRIPTIONS,
     DROP_FACT_TABLE_PRACTICE_SIZE,
+    DROP_DIM_TABLE_PRACTICE_GROUPS,
+    DROP_FACT_TABLE_PRESCRIPTIONS,
 ]
 
 create_statements = [

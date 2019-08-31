@@ -10,7 +10,6 @@ from pyspark.sql.types import (
     DoubleType,
     IntegerType
 )
-import pyspark.sql.functions as f
 from pyspark.sql.functions import udf, monotonically_increasing_id
 
 from helpers import (
@@ -21,10 +20,8 @@ from helpers import (
     bnf_codes_schema
 )
 
-S3_OUTPUT_PATH = Variable.get('s3_output_bucket')
-S3_INPUT_PATH = Variable.get('s3_input_bucket')
-output_directory = Variable.get('local_data_directory_output')
-input_directory = Variable.get('local_data_directory_input')
+S3_STAGING = Variable.get('s3_output_bucket')
+S3_RAW_DATA = Variable.get('s3_input_bucket')
 aws_access_key_id = Variable.get('aws_access_key_id')
 aws_secret_key = Variable.get('aws_secret_access_key')
 
@@ -32,23 +29,6 @@ aws_secret_key = Variable.get('aws_secret_access_key')
 class PreprocessToS3Operator(BaseOperator):
 
     ui_color = '#80BD9E'
-
-    bnf_filenames = [
-        'bnf_chapters',
-        'bnf_sections',
-        'bnf_paragraphs',
-        'bnf_subparagraphs',
-        'bnf_chemicals',
-        'bnf_products',
-        'bnf_presentations'
-    ]
-
-    practices_filenames = [
-        'chemicals',
-        'practices',
-        'practices_size',
-        'practice_prescribing'
-    ]
 
     @apply_defaults
     def __init__(self,
@@ -80,11 +60,11 @@ class PreprocessToS3Operator(BaseOperator):
         self.get_product = udf(lambda x: x[:11] if x else None)
 
         # files
-        self.chemicals_file = f'{input_directory}/chem_subs.csv'
-        self.practices_file = f'{input_directory}/practices.csv'
-        self.practice_prescribing_file = f'{input_directory}/practice_prescribing.csv'
-        self.practice_size_file = f'{input_directory}/practice_list_size_and_gp_count.csv'
-        self.bnf_codes_file = f'{input_directory}/bnf_codes.csv'
+        self.chemicals_file = f'{S3_RAW_DATA}/chem_subs.csv'
+        self.practices_file = f'{S3_RAW_DATA}/practices.csv'
+        self.practice_prescribing_file = f'{S3_RAW_DATA}/practice_prescribing.csv'
+        self.practice_size_file = f'{S3_RAW_DATA}/practice_list_size_and_gp_count.csv'
+        self.bnf_codes_file = f'{S3_RAW_DATA}/bnf_codes.csv'
 
         # create spark session
         self.log.info("Creating Spark Session")
@@ -108,13 +88,13 @@ class PreprocessToS3Operator(BaseOperator):
         bnf_presentations = bnf_codes.select('BNF_PRESENTATION_CODE', 'BNF_PRESENTATION').dropDuplicates()
 
         self.log.info("saving bnf codes data")
-        return bnf_chapters.write.parquet(f'{S3_OUTPUT_PATH}/bnf_chapters.parquet', mode='overwrite'), \
-            bnf_sections.write.parquet(f'{S3_OUTPUT_PATH}/bnf_sections.parquet', mode='overwrite'), \
-            bnf_paragraphs.write.parquet(f'{S3_OUTPUT_PATH}/bnf_paragraphs.parquet', mode='overwrite'), \
-            bnf_subparagraph.write.parquet(f'{S3_OUTPUT_PATH}/bnf_subparagraphs.parquet', mode='overwrite'), \
-            bnf_chemicals.write.parquet(f'{S3_OUTPUT_PATH}/bnf_chemicals.parquet', mode='overwrite'), \
-            bnf_products.write.parquet(f'{S3_OUTPUT_PATH}/bnf_products.parquet', mode='overwrite'), \
-            bnf_presentations.write.parquet(f'{S3_OUTPUT_PATH}/bnf_presentations.parquet', mode='overwrite')
+        return bnf_chapters.write.parquet(f'{S3_STAGING}/bnf_chapters.parquet', mode='overwrite'), \
+            bnf_sections.write.parquet(f'{S3_STAGING}/bnf_sections.parquet', mode='overwrite'), \
+            bnf_paragraphs.write.parquet(f'{S3_STAGING}/bnf_paragraphs.parquet', mode='overwrite'), \
+            bnf_subparagraph.write.parquet(f'{S3_STAGING}/bnf_subparagraphs.parquet', mode='overwrite'), \
+            bnf_chemicals.write.parquet(f'{S3_STAGING}/bnf_chemicals.parquet', mode='overwrite'), \
+            bnf_products.write.parquet(f'{S3_STAGING}/bnf_products.parquet', mode='overwrite'), \
+            bnf_presentations.write.parquet(f'{S3_STAGING}/bnf_presentations.parquet', mode='overwrite')
 
     def process_practices_data(self):
         self.log.info("preprocessing practices data")
@@ -125,7 +105,7 @@ class PreprocessToS3Operator(BaseOperator):
         practices = practices.na.drop(subset=["PRACTICE_CODE"])
 
         self.log.info("saving practices data")
-        return practices.write.parquet(f'{S3_OUTPUT_PATH}/practices.parquet', mode='overwrite')
+        return practices.write.parquet(f'{S3_STAGING}/practices.parquet', mode='overwrite')
 
     def process_practices_size_and_group_data(self):
         self.log.info("preprocessing practices size data")
@@ -148,8 +128,8 @@ class PreprocessToS3Operator(BaseOperator):
         practice_size = practice_size.na.drop(subset=["PRACTICE_CODE"])
 
         self.log.info("saving practices size and group data")
-        return practice_size.write.parquet(f'{S3_OUTPUT_PATH}/practices_size.parquet', mode='overwrite'),\
-            practice_groups.write.parquet(f'{S3_OUTPUT_PATH}/practice_groups.parquet', mode='overwrite')
+        return practice_size.write.parquet(f'{S3_STAGING}/practices_size.parquet', mode='overwrite'),\
+            practice_groups.write.parquet(f'{S3_STAGING}/groups.parquet', mode='overwrite')
 
     def process_prescribing_data(self):
         self.log.info("preprocessing prescribing data")
@@ -159,17 +139,17 @@ class PreprocessToS3Operator(BaseOperator):
         practice_prescribing = practice_prescribing.withColumn("YEAR", self.get_year(practice_prescribing.PERIOD))
         practice_prescribing = practice_prescribing.withColumn("MONTH", self.get_month(practice_prescribing.PERIOD))
         practice_prescribing = practice_prescribing.drop('PERIOD')
-        practice_prescribing = practice_prescribing.withColumn("BNF_CHAPTER_CODE",
+        practice_prescribing = practice_prescribing.withColumn("BNF_CHAPTER",
                                                                self.get_chapter(practice_prescribing['BNF_CODE']))
-        practice_prescribing = practice_prescribing.withColumn("BNF_SECTION_CODE",
+        practice_prescribing = practice_prescribing.withColumn("BNF_SECTION",
                                                                self.get_section(practice_prescribing['BNF_CODE']))
-        practice_prescribing = practice_prescribing.withColumn("BNF_PARAGRAPH_CODE",
+        practice_prescribing = practice_prescribing.withColumn("BNF_PARAGRAPH",
                                                                self.get_paragraph(practice_prescribing['BNF_CODE']))
-        practice_prescribing = practice_prescribing.withColumn("BNF_SUBPARAGRAPH_CODE",
+        practice_prescribing = practice_prescribing.withColumn("BNF_SUBPARAGRAPH",
                                                                self.get_sub_paragraph(practice_prescribing['BNF_CODE']))
-        practice_prescribing = practice_prescribing.withColumn("BNF_CHEMICAL_CODE",
+        practice_prescribing = practice_prescribing.withColumn("BNF_CHEMICAL",
                                                                self.get_chemical(practice_prescribing['BNF_CODE']))
-        practice_prescribing = practice_prescribing.withColumn("BNF_PRODUCT_CODE",
+        practice_prescribing = practice_prescribing.withColumn("BNF_PRODUCT",
                                                                self.get_product(practice_prescribing['BNF_CODE']))
 
         practice_prescribing = practice_prescribing.select(
@@ -193,11 +173,11 @@ class PreprocessToS3Operator(BaseOperator):
         )
 
         self.log.info("saving prescribing data")
-        return practice_prescribing.write.parquet(f'{S3_OUTPUT_PATH}/practice_prescribing.parquet', mode='overwrite')
+        return practice_prescribing.write.parquet(f'{S3_STAGING}/prescriptions.parquet', mode='overwrite')
 
     def execute(self, context):
         self.log.info("saving parquet output files to s3")
         self.process_bnf_data()
         self.process_practices_data()
-        self.process_practices_size_data()
+        self.process_practices_size_and_group_data()
         self.process_prescribing_data()
