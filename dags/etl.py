@@ -6,6 +6,7 @@ from operators import (
     PreprocessToS3Operator,
     S3ToStagingOperator,
     StagingQualityCheckOperator,
+    StagingToPrivateOperator
 )
 
 default_args = {
@@ -47,5 +48,12 @@ check_staging_data_quality = StagingQualityCheckOperator(
 
 end_loading = DummyOperator(task_id='end_loading_to_redshift', dag=dag)
 
+insert_data_into_private = StagingToPrivateOperator(
+    task_id="insert_data_into_private",
+    dag=dag,
+    schema='staging'
+)
+
 start_operator >> preprocess_data_to_s3 >> end_operator
 end_operator >> load_data_to_redshift_staging >> check_staging_data_quality >> end_loading
+end_loading >> insert_data_into_private

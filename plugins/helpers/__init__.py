@@ -1,4 +1,4 @@
-from helpers.sql_statements import drop_statements, create_statements
+from helpers.sql_statements import create_schemas, drop_statements, create_statements
 from helpers.schema_settings import (
     practice_prescribing_schema,
     chemicals_schema,
@@ -9,6 +9,7 @@ from helpers.schema_settings import (
 from helpers.table_names import bnf_tables, practices_tables
 
 __all__ = [
+    'create_schemas',
     'drop_statements',
     'create_statements',
     'practice_prescribing_schema',

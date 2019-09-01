@@ -9,11 +9,13 @@ import helpers
 class CapstonePlugin(AirflowPlugin):
     name = "udacity_plugin"
     operators = [
-        operators.DropTablesOperator,
-        operators.CreateTablesOperator,
-        operators.PreprocessToS3Operator
+        operators.PreliminaryQueriesOperator,
+        operators.PreprocessToS3Operator,
+        operators.StagingQualityCheckOperator,
+        operators.StagingToPrivateOperator
     ]
     helpers = [
+        helpers.create_schemas,
         helpers.drop_statements,
         helpers.create_statements,
         helpers.practice_prescribing_schema,

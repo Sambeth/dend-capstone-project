@@ -1,36 +1,58 @@
 
 | File  | Column  | DataType  | References  | Description  |
 |---|---|---|---|---|
-| Practice prescribing data file  | SHA  |   |   | SHA (Strategic Health Authority) or AT (Area Team) code - 3 characters  |
-|   | PCT  |   |   |  PCT (Primary Care Trust) or CCG (Clinical Commissioning Group) code - 3 characters |
-|   | PRACTICE  |   |   | ANNNNN Practice code - 6 characters  |
-|   | BNF_CODE |   |   | British National Formulary (BNF) code - 15 characters  |
-|   | BNF_NAME |   |   | BNF presentation name - 40 characters  |
-|   | ITEMS  |   |   | Prescription items dispensed - whole numbers  |
-|   | NIC  |   |   | Net ingredient cost - pounds and pence  |
-|   | ACT_COST  |   |   | Actual cost - pounds and pence  |
-|   | QUANTITY  |   |   | Quantity - whole numbers  |
-|   | PERIOD |   |   | YYYYMM  |
+| practices_prescriptions  | id  |   |   |   |
+|  | sha  |   |   | SHA (Strategic Health Authority) or AT (Area Team) code - 3 characters  |
+|   | pct |   |   |  PCT (Primary Care Trust) or CCG (Clinical Commissioning Group) code - 3 characters |
+|   | practice  |   |   | ANNNNN Practice code - 6 characters  |
+|   | bnf_code |   |   | British National Formulary (BNF) code - 15 characters  |
+|   | bnf_chapter |   |   | BNF presentation name - 40 characters  |
+|   | bnf_section |   |   | BNF presentation name - 40 characters  |
+|   | bnf_paragraph |   |   | BNF presentation name - 40 characters  |
+|   | bnf_subparagraph |   |   | BNF presentation name - 40 characters  |
+|   | bnf_chemical |   |   | BNF presentation name - 40 characters  |
+|   | bnf_product |   |   | BNF presentation name - 40 characters  |
+|   | items  |   |   | Prescription items dispensed - whole numbers  |
+|   | nic |   |   | Net ingredient cost - pounds and pence  |
+|   | act_cost  |   |   | Actual cost - pounds and pence  |
+|   | quantity |   |   | Quantity - whole numbers  |
+|   | year |   |   | YYYY  |
+|   | month |   |   | MM  |
 |   |  |   |   |  |
-| Practice level prescribing - practice codes, names and addresses file | PERIOD |   |   | YYYYMM |
-|   | Practice Code |   |   | ANNNNN practice code - 6 characters |
-|   | Practice Name |   |   | Name of surgery |
-|   | Address 1 |   |   | ANY VILLA SURGERY |
-|   | Address 2 |   |   | 1 ANY ROAD |
-|   | Address 3 |   |   | ANYTOWN |
-|   | Address 4 |   |   | ANYSHIRE |
-|   | Postcode |   |   | XX2 7XX |
+| practices - practice codes, names and addresses file | PERIOD |   |   | YYYYMM |
+|   | code |   |   | ANNNNN practice code - 6 characters |
+|   | name |   |   | Name of surgery |
+|   | address 1 |   |   | ANY VILLA SURGERY |
+|   | address 2 |   |   | 1 ANY ROAD |
+|   | address 3 |   |   | ANYTOWN |
+|   | address 4 |   |   | ANYSHIRE |
+|   | postcode |   |   | XX2 7XX |
+|   | year |   |   | XX2 7XX |
+|   | month |   |   | XX2 7XX |
 |   |  |   |   |  |
-| Practice level prescribing chemical names and bnf code file  | CHEM SUB |   |   | Practice level prescribing chemical names and bnf code file |
-|   | NAME |   |   | Chemical Name - 60 characters |
+| practices_size | Comm./Prov. |   |   |  |
+|   | practice code |   |   |  |
+|   | group code |   |   |  |
+|   | gp count |   |   | Number of General Practicioners or Doctors |
+|   | dispensing list Size |   |   | Shows the number of patients registered with a doctor who receive both medical services and dispensing services from their doctor |
+|   | prescribing list Size |   |   | Shows the number of patients registered with a doctor who receive medical services only. |
+|   | total list size |   |   |  |
 |   |  |   |   |  |
-| Practice list size and GP count file | Comm./Prov. |   |   |  |
-|   | Practice Code |   |   |  |
-|   | Practice Name |   |   | Name of the practice or doctor |
-|   | Practice Address |   |   | Address of the practice or doctor |
-|   | Code |   |   |  |
-|   | GP Count |   |   | Number of General Practicioners or Doctors |
-|   | Dispensing List Size |   |   | Shows the number of patients registered with a doctor who receive both medical services and dispensing services from their doctor |
-|   | Prescribing List Size |   |   | Shows the number of patients registered with a doctor who receive medical services only. |
-|   | Total List Size |   |   |  |
+| groups | code |   |   |  |
+|   | comm_prov |   |   |  |
+|   |  |   |   |  |
+| bnf_chapters | code |   |   |  |
+|   | name |   |   |  |
+| bnf_sections | code |   |   |  |
+|   | name |   |   |  |
+| bnf_paragraphs | code |   |   |  |
+|   | name |   |   |  |
+| bnf_subparagraphs | code |   |   |  |
+|   | name |   |   |  |
+| bnf_chemicals | code |   |   |  |
+|   | name |   |   |  |
+| bnf_products | code |   |   |  |
+|   | name |   |   |  |
+| bnf_presentations | code |   |   |  |
+|   | name |   |   |  |
 |   |  |   |   |  |

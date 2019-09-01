@@ -1,100 +1,109 @@
+# create schemas
+CREATE_STAGING_SCHEMA = """
+    CREATE SCHEMA IF NOT EXISTS staging;
+"""
+
+CREATE_PRIVATE_SCHEMA = """
+    CREATE SCHEMA IF NOT EXISTS private;
+"""
+
 # drops queries
 DROP_DIM_TABLE_BNF_CHAPTERS = """
-    DROP TABLE IF EXISTS staging.bnf_chapters;
+    DROP TABLE IF EXISTS {}.bnf_chapters;
 """
 
 DROP_DIM_TABLE_BNF_SECTIONS = """
-    DROP TABLE IF EXISTS staging.bnf_sections;
+    DROP TABLE IF EXISTS {}.bnf_sections;
 """
 
 DROP_DIM_TABLE_BNF_PARAGRAPHS = """
-    DROP TABLE IF EXISTS staging.bnf_paragraphs;
+    DROP TABLE IF EXISTS {}.bnf_paragraphs;
 """
 
 DROP_DIM_TABLE_BNF_SUBPARAGRAPHS = """
-    DROP TABLE IF EXISTS staging.bnf_subparagraphs;
+    DROP TABLE IF EXISTS {}.bnf_subparagraphs;
 """
 
 DROP_DIM_TABLE_BNF_CHEMICALS = """
-    DROP TABLE IF EXISTS staging.bnf_chemicals;
+    DROP TABLE IF EXISTS {}.bnf_chemicals;
 """
 
 DROP_DIM_TABLE_BNF_PRODUCTS = """
-    DROP TABLE IF EXISTS staging.bnf_products;
+    DROP TABLE IF EXISTS {}.bnf_products;
 """
 
 DROP_DIM_TABLE_BNF_PRESENTATIONS = """
-    DROP TABLE IF EXISTS staging.bnf_presentations;
+    DROP TABLE IF EXISTS {}.bnf_presentations;
 """
 
 DROP_DIM_TABLE_PRACTICES = """
-    DROP TABLE IF EXISTS staging.practices;
+    DROP TABLE IF EXISTS {}.practices;
 """
 
 DROP_FACT_TABLE_PRACTICE_SIZE = """
-    DROP TABLE IF EXISTS staging.practice_size;
+    DROP TABLE IF EXISTS {}.practice_size;
 """
 
 DROP_DIM_TABLE_PRACTICE_GROUPS = """
-    DROP TABLE IF EXISTS staging.groups;
+    DROP TABLE IF EXISTS {}.groups;
 """
 
 DROP_FACT_TABLE_PRESCRIPTIONS = """
-    DROP TABLE IF EXISTS staging.prescriptions;
+    DROP TABLE IF EXISTS {}.prescriptions;
 """
 
 # create queries
 CREATE_TABLE_BNF_CHAPTERS = ("""
-    CREATE TABLE staging.bnf_chapters (
+    CREATE TABLE IF NOT EXISTS {}.bnf_chapters (
         code varchar(2) not null,
         name varchar(255)
     );
 """)
 
 CREATE_TABLE_BNF_SECTIONS = ("""
-    CREATE TABLE staging.bnf_sections (
+    CREATE TABLE IF NOT EXISTS {}.bnf_sections (
         code varchar(4) not null,
         name varchar(255)
     );
 """)
 
 CREATE_TABLE_BNF_PARAGRAPHS = ("""
-    CREATE TABLE staging.bnf_paragraphs (
+    CREATE TABLE IF NOT EXISTS {}.bnf_paragraphs (
         code varchar(6) not null,
         name varchar(255)
     );
 """)
 
 CREATE_TABLE_BNF_SUBPARAGRAPHS = ("""
-    CREATE TABLE staging.bnf_subparagraphs (
+    CREATE TABLE IF NOT EXISTS {}.bnf_subparagraphs (
         code varchar(7) not null,
         name varchar(255)
     );
 """)
 
 CREATE_TABLE_BNF_CHEMICALS = ("""
-    CREATE TABLE staging.bnf_chemicals (
+    CREATE TABLE IF NOT EXISTS {}.bnf_chemicals (
         code varchar(9) not null,
         name varchar(255)
     );
 """)
 
 CREATE_TABLE_BNF_PRODUCTS = ("""
-    CREATE TABLE staging.bnf_products (
+    CREATE TABLE IF NOT EXISTS {}.bnf_products (
         code varchar(11) not null,
         name varchar(255)
     );
 """)
 
 CREATE_TABLE_BNF_PRESENTATIONS = ("""
-    CREATE TABLE staging.bnf_presentations (
+    CREATE TABLE IF NOT EXISTS {}.bnf_presentations (
         code varchar(15) not null,
         name varchar(255)
     );
 """)
 
 CREATE_TABLE_PRACTICES = """
-    CREATE TABLE staging.practices (
+    CREATE TABLE IF NOT EXISTS {}.practices (
         code varchar(255) NOT NULL,
         name varchar(255),
         address_1 varchar(255),
@@ -108,7 +117,7 @@ CREATE_TABLE_PRACTICES = """
 """
 
 CREATE_TABLE_PRACTICE_SIZE = """
-    CREATE TABLE staging.practices_size (
+    CREATE TABLE IF NOT EXISTS {}.practices_size (
         practice_code varchar(255),
         group_code varchar(255),
         gp_count integer,
@@ -119,14 +128,14 @@ CREATE_TABLE_PRACTICE_SIZE = """
 """
 
 CREATE_TABLE_PRACTICE_GROUPS = """
-    CREATE TABLE staging.groups (
+    CREATE TABLE IF NOT EXISTS {}.groups (
         code varchar(255),
         comm_prov varchar(255)
     );
 """
 
 CREATE_TABLE_PRESCRIPTIONS = """
-    CREATE TABLE staging.prescriptions (
+    CREATE TABLE IF NOT EXISTS {}.prescriptions (
         id integer not null,
         sha varchar(255),
         pct varchar(255),
@@ -146,6 +155,11 @@ CREATE_TABLE_PRESCRIPTIONS = """
         month integer
     );
 """
+
+create_schemas = [
+    CREATE_STAGING_SCHEMA,
+    CREATE_PRIVATE_SCHEMA
+]
 
 drop_statements = [
     DROP_DIM_TABLE_BNF_CHAPTERS,

@@ -3,7 +3,7 @@ from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
 
-class CreateTablesOperator(BaseOperator):
+class PreliminaryQueriesOperator(BaseOperator):
 
     ui_color = '#80BD9E'
 
@@ -19,7 +19,7 @@ class CreateTablesOperator(BaseOperator):
         :param kwargs:
         """
 
-        super(CreateTablesOperator, self).__init__(*args, **kwargs)
+        super(PreliminaryQueriesOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
         self.queries = queries
 
