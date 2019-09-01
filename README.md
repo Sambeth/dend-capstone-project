@@ -66,10 +66,14 @@ These processed parquet files are then copied and data from them pushed to respe
 
 This project is orchestrated by Airflow using two dags.
 
+![Project Dags](images/dags_cropped.png)
+
 The drop_and_create_tables dag simply runs just ones which drops and creates tables ready for the main
 etl process;
 
-The etl dag is made up of three main pipelines;
+![Drop and Create Dag](images/drop_and_create_dag_cropped.png)
+
+The etl dag is made up of four main pipelines;
 * preprocess_data_to_s3 - this uses spark to read data files from s3 bucket and normalize some files into
 various dimension tables which then stores them as parquet files and pushes them back to the s3 bucket
 
@@ -78,6 +82,11 @@ data to their respective tables.
 
 * check_staging_data_quality - Because the data is month on month, I expect to always have data in the redshift
 staging tables so this goes to check if data push to the staging schema is one or more rows.
+
+* insert_data_into_private - this simply read data in staging tables and inserts them into private tables before
+it truncates the staging tables
+
+![ETL Dag](images/etl_dag_cropped.png)
 
 ## ADDRESSING OTHER SCENARIOS
 #### The data was increased by 100x.

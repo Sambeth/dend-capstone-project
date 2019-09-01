@@ -22,7 +22,8 @@ default_args = {
 dag = DAG(
     'etl',
     default_args=default_args,
-    description='Load data from s3 staging to redshift staging'
+    description='Load data from s3 staging to redshift staging',
+    schedule_interval='@monthly'
 )
 
 start_operator = DummyOperator(task_id='start_preprocessing_data', dag=dag)
