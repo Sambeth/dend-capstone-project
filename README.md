@@ -28,11 +28,6 @@ Data source can be found [here](https://nhsbsa.nhs.uk/prescription-data/organisa
 
 This dataset is a month on month dataset with the exception of the bnf_codes.csv and practice_list_size_and_gd_count.csv. 
 With regards to the practice_prescribing.csv dataset which already has some 10 million rows.
-What I hope to achieve from this dataset is to put the dataset in a form that can make it easy for stakeholders
-to see some trends in drugs being prescribed? 
-Can seasons be detected based on the type of drugs being described? Since these datasets 
-have no information about the patients themselves, can it be easily determined what kind 
-of patients are receiving certain services whether dispensing or medical services.
 
 ## DATA MODEL
 A snowflake schema is used here because this contains sub-dimension tables including fact and dimension tables.
@@ -46,17 +41,35 @@ The bnf_codes.csv is normalized 7 into dimension tables which includes;
 * bnf_chemicals
 * bnf_products
 * bnf_presentations
+
 Better explanation of bnf codes can be found [here](https://ebmdatalab.net/prescribing-data-bnf-codes/)
 
 The practice_list_size_and_gd_count.csv is broken into a facts and dimension tables namely;
 * practices
 * groups
 
-The practice_prescribing.csv is used as the main facts table where all the tables connect to
+The practice_prescribing.csv is used as the main facts table (prescriptions) where all the tables connect to
 directly or indirectly.
 
 You can an ERD view of the snowflake schema [here](Capstone%20Udacity%20Project.png).
 You can also find the data dictionary [here](data_dictionary.md)
+
+## OBJECTIVES OF DATA MODEL
+* To see some trends in drugs being prescribed.
+For instance based on the months it can be determined which drugs are prescribed
+the most by looking at the bnf_chapter the drug belongs to and the condition of 
+patients. This will make it easy to determine outbreaks and at what time it
+started.
+
+* Can seasons be detected based on the type of drugs being described.
+Based on drugs prescribed or dispensed at certain times of the year could show
+seasonality. For instance before winter starts a lot of people usually go for
+flu shots. This could make it easy to predict that we are about to enter flu
+season which also means winter is about to start.
+
+* What patients are receiving certain services whether dispensing or medical services.
+The kind of drugs prescribed could also show what kind of patient is being serviced.
+Some drugs will usually go to mentally ill patients and some will go the elderly.
 
 ## ETL MODEL
 On a month to month basis data from all csv files is pushed to the s3 bucket.
